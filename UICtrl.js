@@ -6,9 +6,13 @@ const UIController = (function() {
     itemNameField: "#item-name",
     itemDateField: "#item-date",
     addBtn: ".add-btn",
+    updateBtn: ".update-btn",
+    deleteBtn: ".delete-btn",
+    backBtn: ".back-btn",
     cardsContainer: ".cards-container",
     card: ".date-card",
-    itemList: ".item-list"
+    itemList: ".item-list",
+    item: ".collection-item"
 
   }
   const $q = document.querySelector.bind(document);
@@ -20,6 +24,9 @@ const UIController = (function() {
     const idToReturn = 'card-' + idArray.join('').toUpperCase();
     return idToReturn.toString();
 
+  };
+  const convertItemObjectIdToHtmlID = function(id) {
+    return `item-${id}`;
   };
 
   const createCard = function(item) {
@@ -42,18 +49,30 @@ const UIController = (function() {
     return Array.from($qa(UISelectors.card))
   };
 
-  const createListItem = function(item) {
-    const li = document.createElement('li');
-    li.className = "collection-item";
-    li.id = `item-${item.id}`;
-    
-    li.innerHTML = `
+  const getAllItems = function() {
+    return Array.from($qa(UISelectors.item))
+  };
+
+  const setItemContent = function(item) {
+
+    const html = `
       <strong>${item.name}: </strong> <br> 
       <em>${item.calories} kcal</em>
       <a href="#" class="secondary-content">
         <i class="edit-item fa fa-pencil"></i>
       </a>
     `;
+
+    return html;
+  }
+
+  const createListItem = function(item) {
+    const li = document.createElement('li');
+    li.className = "collection-item";
+    li.setAttribute('data-d', 'Hello World!');
+    li.id = convertItemObjectIdToHtmlID(item.id);
+    
+    li.innerHTML = setItemContent(item);
 
     return li;
 
@@ -62,20 +81,47 @@ const UIController = (function() {
 
   const assignItemToExistingCard = function(item) {
 
-    const allCards = getAllDateCards();
+    
     const existingCardID = '#' + convertDateToCardId(item.date);
     const cardToAddItem = $q(existingCardID);
 
-    const elementToAppend = createListItem(item);
-    cardToAddItem.querySelector(UISelectors.itemList).appendChild(elementToAppend);
-
-    //document.querySelector("#post").querySelectorAll('.thumb')
-
-    //allcards.forEach(function)
-
-  
    
+      const elementToAppend = createListItem(item);
+      cardToAddItem.querySelector(UISelectors.itemList).appendChild(elementToAppend); 
 
+
+  };
+  const deleteItemFromUI = function(item) {
+    
+    const itemIdToDelete = "#" + convertItemObjectIdToHtmlID(item.id);
+    const htmlItemToDelete = $q(itemIdToDelete);
+
+    htmlItemToDelete.remove();
+  
+  };
+  const deleteEmptyCardsFromTheUI = function() {
+    const allcards = getAllDateCards();
+    allcards.forEach(function(card) {
+
+      if( card.querySelector(UISelectors.itemList).children.length === 0 ) {
+        card.remove();
+      }
+    
+    })
+  };
+
+  const showEditState = function() {
+    $q(UISelectors.addBtn).style.display = 'none';
+    $q(UISelectors.updateBtn).style.display = 'inline-block';
+    $q(UISelectors.deleteBtn).style.display = 'inline-block';
+    $q(UISelectors.backBtn).style.display = 'inline-block';
+
+  };
+  clearEditState = function() {
+    $q(UISelectors.addBtn).style.display = 'inline-block';
+    $q(UISelectors.updateBtn).style.display = 'none';
+    $q(UISelectors.deleteBtn).style.display = 'none';
+    $q(UISelectors.backBtn).style.display = 'none';
   }
 
   return {
@@ -102,7 +148,7 @@ const UIController = (function() {
     getSelectors: function() {
       return UISelectors;
     },
-    getInputDataOfNewItem: function() {
+    getInputData: function() {
       const [name, date, calories] = [$q(UISelectors.itemNameField).value, $q(UISelectors.itemDateField).value, $q(UISelectors.itemCaloriesField).value];
 
       const [itemName, itemDate, itemCalories ] = [name, date, calories];
@@ -125,7 +171,54 @@ const UIController = (function() {
 
       assignItemToExistingCard(item);
 
-     
+    },
+
+    updateItemInTheUI: function(item) {
+      //this should be responsible for update the content if the date is the same or change the place in the UI when ID should stay the same.
+
+      const itemID = "#"+ convertItemObjectIdToHtmlID(item.id);
+      const existingItem = $q(itemID);
+
+      //if the card didnt change
+      const existingCardID = existingItem.closest('.date-card').id;
+
+      if(existingCardID === convertDateToCardId(item.date)) {
+      
+        existingItem.innerHTML = setItemContent(item);
+
+      } else {
+        //if the card changes
+        deleteItemFromUI(item);
+        
+        deleteEmptyCardsFromTheUI();
+        UIController.addItemToTheUI(item);
+
+      
+      //if the card is going to change - we need to create another card - done
+      // then delete existing item
+      //then create another item with same ID as that one deleted.
+      //but what if the content changes and card changes too??
+
+      }
+
+
+    },
+
+    addCurrentItemToForm: function() {
+      const currentItem = ItemController.getCurrentItem();
+      $q(UISelectors.itemNameField).value = currentItem.name;
+      $q(UISelectors.itemCaloriesField).value = currentItem.calories;
+      $q(UISelectors.itemDateField).value = currentItem.date;
+
+      showEditState();
+    },
+
+    convertDataToUIList: function(arrayOfObjects) {
+      console.log('conversion to ui');
+
+      arrayOfObjects.forEach( item => {
+        UIController.addItemToTheUI(item);
+      })
     }
 
    

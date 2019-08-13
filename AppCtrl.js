@@ -5,12 +5,22 @@ const AppController = (function() {
   const loadEventListeners = function() {
     const UISelectors = UIController.getSelectors();
     $q(UISelectors.addBtn).addEventListener('click', itemAddOnSubmit);
+    $q(UISelectors.updateBtn).addEventListener('click', updateItemOnSubmit);  
+    // $q(UISelectors.deleteBtn).addEventListener('click', editItemOnClick);
+    // $q(UISelectors.backBtn).addEventListener('click', editItemOnClick);
+    
+    $q(UISelectors.cardsContainer).addEventListener('click', editItemOnClick);
+    
+  };
 
+  const loadData = function() {
+    console.info('Data loaded');
+    return ItemController.getAllItems();
   };
   
   const itemAddOnSubmit = function(e) {
     e.preventDefault();
-    const inputObject = UIController.getInputDataOfNewItem();
+    const inputObject = UIController.getInputData();
     
     const item = ItemController.addItem(inputObject);
 
@@ -19,12 +29,41 @@ const AppController = (function() {
 
 
   };
+  const editItemOnClick = function(e) {
+    e.preventDefault();
+
+    if(e.target.classList.contains('edit-item')) {
+      //get the id of the item
+      const itemIdPhrase = e.target.parentNode.parentNode.id;
+      const itemIdNumber = ItemController.extractIdNumberFromEntireItemId(itemIdPhrase);
+      
+      const currentItemToEdit = ItemController.getItemById(itemIdNumber);
+      
+      ItemController.setCurrentItem(currentItemToEdit);
+      UIController.addCurrentItemToForm();
+
+
+    }
+  };
+  const updateItemOnSubmit = function(e) {
+    e.preventDefault();
+    const updatedItemDetails = UIController.getInputData();
+
+    const updatedItem = ItemController.updateItem(updatedItemDetails);
+
+    //const updatedData = loadData();
+    UIController.updateItemInTheUI(updatedItem);
+
+    //UIController.convertDataToUIList(updatedData);
+  };
+
 
   return {
     init: function() {
       UIController.initializeDatePicker();
       UIController.initializeRange();
       loadEventListeners();
+      UIController.convertDataToUIList(loadData());
 
     }
   }
