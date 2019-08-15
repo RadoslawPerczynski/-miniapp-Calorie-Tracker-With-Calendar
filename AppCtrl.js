@@ -6,11 +6,10 @@ const AppController = (function() {
     const UISelectors = UIController.getSelectors();
     $q(UISelectors.addBtn).addEventListener('click', itemAddOnSubmit);
     $q(UISelectors.updateBtn).addEventListener('click', updateItemOnSubmit);  
-    // $q(UISelectors.deleteBtn).addEventListener('click', editItemOnClick);
-    // $q(UISelectors.backBtn).addEventListener('click', editItemOnClick);
-    
+    $q(UISelectors.deleteBtn).addEventListener('click', itemDeletionSubmit);
+    $q(UISelectors.backBtn).addEventListener('click', UIController.goBack);
     $q(UISelectors.cardsContainer).addEventListener('click', editItemOnClick);
-    
+    $q(UISelectors.clearAll).addEventListener('click', deleteAllData);
   };
 
   const loadData = function() {
@@ -21,6 +20,15 @@ const AppController = (function() {
     e.preventDefault();
     const inputObject = UIController.getInputData();
     
+    inputValuesArray = Object.values(inputObject);
+    
+    inputValuesArray.some(function(elem) {
+      if (elem === '') {
+        UIController.showMessage();
+        throw "Fill all the fields";
+      }
+    });
+
     const item = ItemController.addItem(inputObject);
 
     //draw the stuff on ui
@@ -56,6 +64,24 @@ const AppController = (function() {
 
   };
 
+  const itemDeletionSubmit = function(e) {
+    e.preventDefault();
+    const itemToDelete = ItemController.getCurrentItem();
+    ItemController.deleteItem(itemToDelete);
+    UIController.deleteItemFromUI(itemToDelete);
+
+  };
+  const deleteAllData = function() {
+   
+    const areYouSure = confirm('All data will be lost. Are you sure?');
+
+    if(areYouSure) {
+      UIController.deleteAllItems();
+      ItemController.deleteAllItems();
+    }
+  
+  };
+
 
   return {
     init: function() {
@@ -63,6 +89,7 @@ const AppController = (function() {
       UIController.initializeRange();
       loadEventListeners();
       UIController.convertDataToUIList(loadData());
+      UIController.sortCards();
 
     }
   }

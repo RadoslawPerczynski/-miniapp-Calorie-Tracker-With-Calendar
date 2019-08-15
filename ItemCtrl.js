@@ -3,8 +3,8 @@ const ItemController = (function() {
   data = {
     currentItem: null,
     items: [
-      {date: "09/08/2019", name: "Radek100", calories: "100", id: 0},
-      {date: "09/08/2019", name: "Radek200", calories: "200", id: 1},
+      {date: "12/08/2019", name: "Radek100", calories: "100", id: 0},
+      {date: "09/07/2019", name: "Radek200", calories: "200", id: 1},
       {date: "10/08/2019", name: "Radek300", calories: "400", id: 2}
     ]
   };
@@ -74,6 +74,15 @@ const ItemController = (function() {
       return itemToReturn;
 
     },
+    deleteItem: function(item) {
+      const newArrayOfItems = data.items.filter(x => x.id != item.id);
+      data.items = newArrayOfItems;
+
+    },
+    deleteAllItems: function() {
+      data.items.length = 0;
+    },
+
     getTotalCaloriesPerDay: function() {
 
       let totalCaloriesPerDayObj = {};

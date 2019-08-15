@@ -9,11 +9,14 @@ const UIController = (function() {
     updateBtn: ".update-btn",
     deleteBtn: ".delete-btn",
     backBtn: ".back-btn",
+    clearAll: ".clear-btn",
     cardsContainer: ".cards-container",
     card: ".date-card",
     itemList: ".item-list",
     item: ".collection-item",
-    totalKcal: ".totalKcal"
+    totalKcal: ".totalKcal",
+    buttonsContainer: ".buttons-container",
+    errorMessage: ".error-message"
 
   }
   const $q = document.querySelector.bind(document);
@@ -51,9 +54,7 @@ const UIController = (function() {
     return Array.from($qa(UISelectors.card))
   };
 
-  // const getAllItems = function() {
-  //   return Array.from($qa(UISelectors.item))
-  // };
+
 
   const setItemContent = function(item) {
 
@@ -93,7 +94,7 @@ const UIController = (function() {
 
 
   };
-  const deleteItemFromUI = function(item) {
+  const deleteItem = function(item) {
     
     const itemIdToDelete = "#" + convertItemObjectIdToHtmlID(item.id);
     const htmlItemToDelete = $q(itemIdToDelete);
@@ -167,6 +168,32 @@ const UIController = (function() {
         calories: itemCalories
       }
     },
+    showMessage: function() {
+     
+      if($q(UISelectors.errorMessage) === null) {
+
+        let error = document.createElement('div');
+        error.className = "error-message center-align red lighten-1 white-text";
+        error.style.margin = "10px 0";
+        error.style.padding = "10px";
+        let textnode = document.createTextNode("Fill all the fields!"); 
+        error.appendChild(textnode); 
+        
+        $q(UISelectors.buttonsContainer).insertBefore(error, $q(UISelectors.addBtn).nextSibling ) ;
+        
+        setTimeout(function() {
+          error.remove();
+        }, 2500)
+      }
+
+    },
+     sortCards: function() {
+      const allcards = getAllDateCards();
+      allcards.sort(function(a,b) {
+        console.log('hah')
+      });
+    },
+
     addItemToTheUI: function(item) {  
 
       const allcards = getAllDateCards();
@@ -197,7 +224,7 @@ const UIController = (function() {
 
       } else {
         //if the card does change, we need to delete existing item from the UI. Just in case if the card is empty we delete the card as well. Then we are adding the updated item like it was a normal new item. The ID remains the same though.
-        deleteItemFromUI(item);
+        deleteItem(item);
         
         deleteEmptyCardsFromTheUI();
         UIController.addItemToTheUI(item);
@@ -207,6 +234,22 @@ const UIController = (function() {
       clearEditState();
       clearInputs();
 
+    },
+    deleteItemFromUI: function(item) {
+      deleteItem(item);
+      clearInputs();
+      clearEditState();
+      deleteEmptyCardsFromTheUI();
+    },
+    goBack: function() {
+      clearInputs();
+      clearEditState();
+    },
+    deleteAllItems: function() {
+      allcards = getAllDateCards();
+      allcards.forEach(card => card.remove());
+      clearEditState();
+      clearInputs();
     },
 
     addCurrentItemToForm: function() {
