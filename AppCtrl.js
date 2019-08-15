@@ -34,6 +34,10 @@ const AppController = (function() {
     //draw the stuff on ui
     UIController.addItemToTheUI(item);
     UIController.sortCards();
+
+    const totalCaloriesObject = ItemController.getTotalCaloriesPerDay();
+    UIController.setTotalCaloriesForEachCard(totalCaloriesObject);
+
     StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
 
   };
@@ -72,6 +76,10 @@ const AppController = (function() {
     const itemToDelete = ItemController.getCurrentItem();
     ItemController.deleteItem(itemToDelete);
     UIController.deleteItemFromUI(itemToDelete);
+
+    const totalCaloriesObject = ItemController.getTotalCaloriesPerDay();
+    UIController.setTotalCaloriesForEachCard(totalCaloriesObject);
+    
     StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
 
   };

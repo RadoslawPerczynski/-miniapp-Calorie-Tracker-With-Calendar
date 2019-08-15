@@ -203,7 +203,6 @@ const UIController = (function() {
         card.classList.remove('clearfix')
 
         if(index %3 === 0) {
-          console.log(index)
           card.classList.add('clearfix')
         }
 
