@@ -12,7 +12,8 @@ const UIController = (function() {
     cardsContainer: ".cards-container",
     card: ".date-card",
     itemList: ".item-list",
-    item: ".collection-item"
+    item: ".collection-item",
+    totalKcal: ".totalKcal"
 
   }
   const $q = document.querySelector.bind(document);
@@ -37,6 +38,7 @@ const UIController = (function() {
         <span class="card-title">${item.date}</span>
         <ul class="collection black-text item-list" >
         </ul>
+        <span class="totalKcal"></span>
       </div>
     </div>
   </div>
@@ -49,9 +51,9 @@ const UIController = (function() {
     return Array.from($qa(UISelectors.card))
   };
 
-  const getAllItems = function() {
-    return Array.from($qa(UISelectors.item))
-  };
+  // const getAllItems = function() {
+  //   return Array.from($qa(UISelectors.item))
+  // };
 
   const setItemContent = function(item) {
 
@@ -117,12 +119,18 @@ const UIController = (function() {
     $q(UISelectors.backBtn).style.display = 'inline-block';
 
   };
-  clearEditState = function() {
+  const clearEditState = function() {
     $q(UISelectors.addBtn).style.display = 'inline-block';
     $q(UISelectors.updateBtn).style.display = 'none';
     $q(UISelectors.deleteBtn).style.display = 'none';
     $q(UISelectors.backBtn).style.display = 'none';
-  }
+  };
+  const clearInputs = function() {
+    $q(UISelectors.itemNameField).value = "";
+    $q(UISelectors.itemCaloriesField).value = "";
+    $q(UISelectors.itemDateField).value = "";
+    
+  };
 
   return {
     initializeDatePicker: function() {
@@ -170,37 +178,34 @@ const UIController = (function() {
       }
 
       assignItemToExistingCard(item);
+      clearInputs();
 
     },
 
     updateItemInTheUI: function(item) {
-      //this should be responsible for update the content if the date is the same or change the place in the UI when ID should stay the same.
+      //this should be responsible for update the content if the date is the same or change the place in the UI while ID should stay the same.
 
       const itemID = "#"+ convertItemObjectIdToHtmlID(item.id);
       const existingItem = $q(itemID);
 
-      //if the card didnt change
-      const existingCardID = existingItem.closest('.date-card').id;
-
-      if(existingCardID === convertDateToCardId(item.date)) {
       
+      const existingCardID = existingItem.closest('.date-card').id;
+      //if the item is being updated but the card doesn't change, we only set new data in the UI
+      if(existingCardID === convertDateToCardId(item.date)) {
+        //set an updated content of existing item
         existingItem.innerHTML = setItemContent(item);
 
       } else {
-        //if the card changes
+        //if the card does change, we need to delete existing item from the UI. Just in case if the card is empty we delete the card as well. Then we are adding the updated item like it was a normal new item. The ID remains the same though.
         deleteItemFromUI(item);
         
         deleteEmptyCardsFromTheUI();
         UIController.addItemToTheUI(item);
-
-      
-      //if the card is going to change - we need to create another card - done
-      // then delete existing item
-      //then create another item with same ID as that one deleted.
-      //but what if the content changes and card changes too??
+        
 
       }
-
+      clearEditState();
+      clearInputs();
 
     },
 
@@ -214,11 +219,24 @@ const UIController = (function() {
     },
 
     convertDataToUIList: function(arrayOfObjects) {
-      console.log('conversion to ui');
 
       arrayOfObjects.forEach( item => {
         UIController.addItemToTheUI(item);
       })
+
+      const totalCaloriesPerDay = ItemController.getTotalCaloriesPerDay();
+
+      UIController.setTotalCaloriesForEachCard(totalCaloriesPerDay);
+      
+    },
+
+    
+  setTotalCaloriesForEachCard: function(dateCaloriesObject) {
+      //iterate through the received object of key-value pairs and assign the calories to the proper card
+      Object.entries(dateCaloriesObject).forEach(function([key, value]) {
+        const cardID = convertDateToCardId(key);
+        $q('#' + cardID).querySelector(UISelectors.totalKcal).textContent = `Total: ${value} kcal`;
+      });
     }
 
    

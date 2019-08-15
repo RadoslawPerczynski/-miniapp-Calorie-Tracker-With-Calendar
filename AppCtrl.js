@@ -14,7 +14,6 @@ const AppController = (function() {
   };
 
   const loadData = function() {
-    console.info('Data loaded');
     return ItemController.getAllItems();
   };
   
@@ -51,10 +50,10 @@ const AppController = (function() {
 
     const updatedItem = ItemController.updateItem(updatedItemDetails);
 
-    //const updatedData = loadData();
     UIController.updateItemInTheUI(updatedItem);
+    const totalCaloriesObject = ItemController.getTotalCaloriesPerDay();
+    UIController.setTotalCaloriesForEachCard(totalCaloriesObject);
 
-    //UIController.convertDataToUIList(updatedData);
   };
 
 

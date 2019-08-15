@@ -5,7 +5,7 @@ const ItemController = (function() {
     items: [
       {date: "09/08/2019", name: "Radek100", calories: "100", id: 0},
       {date: "09/08/2019", name: "Radek200", calories: "200", id: 1},
-      {date: "10/08/2019", name: "Radek300", calories: "300", id: 2}
+      {date: "10/08/2019", name: "Radek300", calories: "400", id: 2}
     ]
   };
 
@@ -73,6 +73,29 @@ const ItemController = (function() {
       });
       return itemToReturn;
 
+    },
+    getTotalCaloriesPerDay: function() {
+
+      let totalCaloriesPerDayObj = {};
+      
+      data.items.forEach(function(itemObj) {
+
+        const DateKey = itemObj.date;
+        const CaloriesValue = parseInt(itemObj.calories);
+
+        if(!totalCaloriesPerDayObj.hasOwnProperty(DateKey)) {
+          
+          totalCaloriesPerDayObj[DateKey] = CaloriesValue;
+
+        } else {
+          const currentCaloriesValue =  totalCaloriesPerDayObj[DateKey];
+          totalCaloriesPerDayObj[DateKey] = currentCaloriesValue + CaloriesValue
+
+        }
+      })
+      
+      return totalCaloriesPerDayObj;
+      
     },
 
     logData: function() {
