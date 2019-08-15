@@ -35,7 +35,7 @@ const UIController = (function() {
 
   const createCard = function(item) {
     cardHtml = `
-    <div class="col s12 m6 date-card" id="${convertDateToCardId(item.date)}">
+    <div class="col s12 m4 date-card" data-original-date="${item.date}"id="${convertDateToCardId(item.date)}">
     <div class="card blue-grey darken-1">
       <div class="card-content white-text">
         <span class="card-title">${item.date}</span>
@@ -53,8 +53,6 @@ const UIController = (function() {
   const getAllDateCards = function() {
     return Array.from($qa(UISelectors.card))
   };
-
-
 
   const setItemContent = function(item) {
 
@@ -111,6 +109,7 @@ const UIController = (function() {
       }
     
     })
+    UIController.sortCards();
   };
 
   const showEditState = function() {
@@ -141,6 +140,7 @@ const UIController = (function() {
               format: "dd/mm/yyyy",
               defaultDate: new Date()
             });
+        
     },
 
     initializeRange: function() {
@@ -189,9 +189,27 @@ const UIController = (function() {
     },
      sortCards: function() {
       const allcards = getAllDateCards();
-      allcards.sort(function(a,b) {
-        console.log('hah')
+
+      const newOrder = allcards.sort(function(a,b) {
+        let newA = a.getAttribute('data-original-date').split('/').reverse().join('-');
+        let newB = b.getAttribute('data-original-date').split('/').reverse().join('-');
+
+        return new Date(newB) - new Date(newA);
+      })
+
+      const cardContainer = $q(UISelectors.cardsContainer);
+
+      newOrder.forEach(function(card,index) {
+        card.classList.remove('clearfix')
+
+        if(index %3 === 0) {
+          console.log(index)
+          card.classList.add('clearfix')
+        }
+
+        cardContainer.appendChild(card);
       });
+
     },
 
     addItemToTheUI: function(item) {  

@@ -33,7 +33,8 @@ const AppController = (function() {
 
     //draw the stuff on ui
     UIController.addItemToTheUI(item);
-
+    UIController.sortCards();
+    StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
 
   };
   const editItemOnClick = function(e) {
@@ -61,6 +62,8 @@ const AppController = (function() {
     UIController.updateItemInTheUI(updatedItem);
     const totalCaloriesObject = ItemController.getTotalCaloriesPerDay();
     UIController.setTotalCaloriesForEachCard(totalCaloriesObject);
+    UIController.sortCards();
+    StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
 
   };
 
@@ -69,6 +72,7 @@ const AppController = (function() {
     const itemToDelete = ItemController.getCurrentItem();
     ItemController.deleteItem(itemToDelete);
     UIController.deleteItemFromUI(itemToDelete);
+    StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
 
   };
   const deleteAllData = function() {
@@ -78,6 +82,7 @@ const AppController = (function() {
     if(areYouSure) {
       UIController.deleteAllItems();
       ItemController.deleteAllItems();
+      StorageController.syncDataWithLocalStorage(ItemController.getAllItems());
     }
   
   };
@@ -88,6 +93,7 @@ const AppController = (function() {
       UIController.initializeDatePicker();
       UIController.initializeRange();
       loadEventListeners();
+
       UIController.convertDataToUIList(loadData());
       UIController.sortCards();
 

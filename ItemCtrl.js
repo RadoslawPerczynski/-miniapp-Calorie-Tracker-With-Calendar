@@ -2,11 +2,13 @@ const ItemController = (function() {
 
   data = {
     currentItem: null,
-    items: [
-      {date: "12/08/2019", name: "Radek100", calories: "100", id: 0},
-      {date: "09/07/2019", name: "Radek200", calories: "200", id: 1},
-      {date: "10/08/2019", name: "Radek300", calories: "400", id: 2}
-    ]
+    // items: [
+    //   // {date: "12/09/2019", name: "Radek100", calories: "100", id: 0},
+    //   // {date: "22/07/2019", name: "Radek200", calories: "200", id: 1},
+    //   // {date: "11/10/2019", name: "Radek300", calories: "400", id: 2},
+    //   // {date: "13/08/2019", name: "Radek800", calories: "800", id: 3}
+    // ]
+    items: StorageController.getDataFromLS()
   };
 
   //new item constructor
