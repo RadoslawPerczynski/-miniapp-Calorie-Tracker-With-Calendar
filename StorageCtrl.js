@@ -7,9 +7,16 @@ const StorageController = (function() {
     },
 
     getDataFromLS: function() {
-      const retrievedData = localStorage.getItem('calorieTrackerItems') || [];
+      let retrievedData = [];
 
-      return JSON.parse(retrievedData);
+      if(localStorage.getItem('calorieTrackerItems') === null) {
+          localStorage.setItem('calorieTrackerItems', '[]')
+          
+      } else {
+        retrievedData = JSON.parse(localStorage.getItem('calorieTrackerItems'));
+      }
+
+      return retrievedData;
 
     }
 
